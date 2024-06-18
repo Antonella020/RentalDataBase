@@ -1,0 +1,270 @@
+#include <iostream>
+#include "Hotel.hpp"
+using namespace std;
+
+void menuCliente(ListaDeInmuebles& TodosInmuebles);
+void menuPropietario(ListaDeInmuebles& TodosInmuebles, ListaDePropietarios& TodosPropietarios);
+
+int main() {   
+    ListaDeInmuebles TodosInmuebles(0);
+    TodosInmuebles.leerInmuebles();
+    ListaDePropietarios TodosPropietarios(0);
+    TodosPropietarios.leerPropietarios();
+    int opcion = 0;
+    
+    while (opcion != 3) {
+        cout << "\n----Menu Principal----\n";
+        cout << "1. Cliente" << endl;
+        cout << "2. Propietario" << endl;
+        cout << "3. Salir" << endl;
+        cout << "Como desea ingresar? ";
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1:
+                menuCliente(TodosInmuebles);
+                break;
+            case 2:
+                menuPropietario(TodosInmuebles,TodosPropietarios);
+                break;
+            case 3:
+                cout << "Saliendo ..." << endl;
+                break;
+            default: 
+                cout << "Opcion no valida. Intente de nuevo" << endl;
+        }
+    }
+    
+    TodosInmuebles.guardarInmuebles();
+    TodosPropietarios.guardarPropietarios();
+    return 0;
+}
+
+void menuCliente(ListaDeInmuebles& TodosInmuebles) {
+    int op = 0;
+
+    while (op != 5) { 
+        cout << "\n---- Menu del Cliente ----" << endl;
+        cout << "1. Ver todos los inmuebles" << endl;
+        cout << "2. Buscar por direccion" << endl;
+        cout << "3. Buscar por numero de cuartos" << endl;
+        cout << "4. Buscar por precio" << endl;
+        cout << "5. Salir" << endl;
+        cout << "Selecciona una opcion: ";
+        cin >> op;
+
+        switch(op) {
+            case 1:
+                cout << "\nLista de Inmuebles\n";
+                TodosInmuebles.mostrar();
+                break;
+            case 2: {
+                char direccion[128];
+                cout << "Ingrese la direccion a buscar: ";
+                cin.ignore();
+                cin.getline(direccion, 128);
+
+                ListaDeInmuebles resultado = TodosInmuebles.buscarPorDireccion(direccion);
+                cout << "Resultados de la busqueda: " << endl;
+                resultado.mostrar();
+                break;
+            }
+            case 3: {
+                int minCuartos = -1;
+                int maxCuartos = -1;
+                cout << "Ingrese el numero minimo de cuartos (o -1 para ignorar): ";
+                cin >> minCuartos;
+                cout << "Ingrese el numero maximo de cuartos (o -1 para ignorar): ";
+                cin >> maxCuartos;
+
+                ListaDeInmuebles resultado = TodosInmuebles.buscarPorNumCuartos(minCuartos, maxCuartos);
+                cout << "\nResultado de la busqueda: \n";
+                resultado.mostrar();
+                break;
+            }
+            case 4: {
+                float precioMin = -1;
+                float precioMax = -1;
+                cout << "Ingrese el precio minimo (o -1 para ignorar): ";
+                cin >> precioMin;
+                cout << "Ingrese el precio maximo (o -1 para ignorar): ";
+                cin >> precioMax;
+                ListaDeInmuebles resultado = TodosInmuebles.buscarPorPrecio(precioMin, precioMax);
+                cout << "\nResultado de la busqueda:\n";
+                resultado.mostrar();
+                break;
+            }
+            case 5:
+                cout << "Saliendo ..." << endl;
+                break;
+            default: 
+                cout << "opcion no valida";
+        }
+    }
+}
+
+void menuPropietario(ListaDeInmuebles& TodosInmuebles, ListaDePropietarios& TodosPropietarios) {
+    int op = 0;
+    cout << "\n---- Menu del Propietario ----" << endl;
+    cout << "1. Registrarse" << endl;
+    cout << "2. Iniciar sesion" << endl;
+    cout << "Seleccione una opcion: ";
+    cin >> op;
+    
+    if (op == 1) {
+        Propietario nuevoPropietario;
+        char nombre[128], telefono[10], nuevaContrasena[100], dni[9];
+
+        cout << "Ingrese su nombre: ";
+        cin.ignore();
+        cin.getline(nombre, 128);
+        nuevoPropietario.setNombre(nombre);
+
+        cout << "Ingrese su DNI: ";
+        cin.getline(dni, 9);
+        nuevoPropietario.setDni(dni);
+
+        cout << "Ingrese su telefono: ";
+        cin.getline(telefono, 10);
+        nuevoPropietario.setTelefono(telefono);
+
+        cout << "Establezca una contrasena: ";
+        cin.getline(nuevaContrasena, 100);
+        nuevoPropietario.setContrasena(nuevaContrasena);
+
+        TodosPropietarios.addPropietario(nuevoPropietario);
+        cout << "Registro existoso" << endl;
+
+        return;
+    } else if (op == 2) {
+        char dni[9], contrasena[100];
+        int opcion = 0;
+        cout << "Ingrese su DNI: ";
+        cin.ignore();
+        cin.getline(dni, 9);
+
+        cout << "Ingrese su contrasena: ";
+        cin.getline(contrasena, 100);
+
+        Propietario* propietarioActual = TodosPropietarios.verificar(dni, contrasena);
+        if (propietarioActual != nullptr) {
+            while (opcion != 5) {
+                cout << "\n---- Menu del Propietario ----" << endl;
+                cout << "1. Agregar inmuebles" << endl;
+                cout << "2. Modificar inmueble" << endl;
+                cout << "3. Eliminar inmueble" << endl;
+                cout << "4. Mostrar mis inmuebles" << endl;
+                cout << "5. Salir" << endl;
+                cout << "Seleccione una opcion: ";
+                cin >> opcion;
+                cin.ignore();
+
+                switch (opcion) {
+                    case 1: {
+                        int numInmuebles = 0;
+                        cout << "Inmuebles a ingresar: ";
+                        cin >> numInmuebles;
+                        cin.ignore();
+                        for (int i = 0; i < numInmuebles; i++) {
+                            char direccion[128];
+                            int numCuartos;
+                            float precio;
+                            cout << "Ingrese la direccion del inmueble: ";
+                            cin.ignore();
+                            cin.getline(direccion, 128);
+                            cout << "Ingrese el numero de cuartos: ";
+                            cin >> numCuartos;
+                            cout << "Ingrese el precio del inmueble: ";
+                            cin >> precio;
+                            cin.ignore();
+
+                            Inmueble nuevoInmueble;
+                            nuevoInmueble.setDireccion(direccion);
+                            nuevoInmueble.setNumCuartos(numCuartos);
+                            nuevoInmueble.setPrecio(precio);
+                            nuevoInmueble.setDniPropietario(propietarioActual->getDni());
+
+                            TodosInmuebles.addInmueble(nuevoInmueble);
+                        }
+                        cout << "Inmuebles agregados con éxito." << endl;
+                        break;
+                    }
+                    case 2: {
+                        int index;
+                        cout << "Ingrese el índice del inmueble a modificar: ";
+                        cin >> index;
+                        index--; // Convertir a índice basado en 0
+                        try {
+                            Inmueble& inmueble = TodosInmuebles.getInmueble(index);
+                            char direccion[128];
+                            int numCuartos;
+                            float precio;
+
+                            cout << "Ingrese la nueva direccion del inmueble: ";
+                            cin.ignore();
+                            cin.getline(direccion, 128);
+                            cout << "Ingrese el nuevo numero de cuartos: ";
+                            cin >> numCuartos;
+                            cout << "Ingrese el nuevo precio del inmueble: ";
+                            cin >> precio;
+                            cin.ignore();
+
+                            inmueble.setDireccion(direccion);
+                            inmueble.setNumCuartos(numCuartos);
+                            inmueble.setPrecio(precio);
+
+                            cout << "Inmueble modificado con éxito." << endl;
+                        } catch (std::out_of_range& e) {
+                            cout << "Índice fuera de rango." << endl;
+                        }
+                        break;
+                    }
+                    case 3: {
+                        int index;
+                        cout << "Ingrese el índice del inmueble a eliminar: ";
+                        cin >> index;
+                        index--; // Convertir a índice basado en 0
+                        try {
+                            TodosInmuebles.eliminarInmueble(index);
+                            cout << "Inmueble eliminado con éxito." << endl;
+                        } catch (std::out_of_range& e) {
+                            cout << "Índice fuera de rango." << endl;
+                        }
+                        break;
+                    }
+                    case 4: {
+                        cout << "\nMis inmuebles: " << endl;
+                        ListaDeInmuebles misInmuebles = TodosInmuebles.filtrarPorPropietario(propietarioActual->getDni());
+                        misInmuebles.mostrar();
+                        break;
+                    }
+                    case 5:
+                        cout << "Saliendo..." << endl;
+                        break;
+                    default:
+                        cout << "Opción no válida." << endl;
+                }
+            }
+        } else {
+            cout << "Verificación fallida." << endl;
+        }
+    } else {
+        cout << "Opción no válida." << endl;
+    }
+}
+
+
+// void guardarInmuebles(ListaDeInmuebles& inmuebles) {
+//     FILE* archivo = fopen("inmuebles.txt","w");
+
+//     if (archivo != NULL) {
+//         for (int i = 0; i < inmuebles.getSize(); i++) {
+//             Inmueble& inmueble = inmuebles.getInmueble(i);
+//             fprintf(archivo, "%s\n%d\n%f\n\n", inmueble.getDireccion(), inmueble.getNumCuartos(), inmueble.getPrecio());
+//         }
+
+//         fclose(archivo);
+//     } else {
+//         cout << "No se pudo abrir 'inmuebles.txt'" << endl;
+//     }
+// }
