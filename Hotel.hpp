@@ -5,9 +5,13 @@
 using namespace std;
 
 int strlen(char* string);
-void strcpy(char* destino, const char* original);
+void my_strcpy(char* destino, const char* original);
 bool strcomp(char* str1, char* str2);
 bool strcontains(const char* cadenaPrincipal, const char* subcadena);
+
+// -------------------------------------------------
+// -------- INMUEBLES Y LISTA INMUEBLES ------------
+// -------------------------------------------------
 
 class Inmueble {
 public:
@@ -33,7 +37,7 @@ private:
     char dniPropietario[9];
     
     friend int strlen(char* string);
-    friend void strcpy(char* destino, const char* original);
+    friend void my_strcpy(char* destino, const char* original);
 };
 
 class ListaDeInmuebles {
@@ -63,6 +67,10 @@ private:
     Inmueble* Lista;
 };
 
+// -------------------------------------------------
+// -------- CLIENTE Y LISTA DE CLIENTE ------------
+// -------------------------------------------------
+
 class Cliente {
 public: 
     Cliente();
@@ -83,7 +91,7 @@ private:
     char telefono[10];
 
     friend int strlen(char* string);
-    friend void strcpy(char* destino, const char* original);
+    friend void my_strcpy(char* destino, const char* original);
 };
 
 class ListaDeClientes {
@@ -109,6 +117,10 @@ private:
     friend bool strcontains(const char* cadenaPrincipal, const char* subcadena);
 };
 
+// -------------------------------------------------
+// ----- PROPIETARIO Y LISTA DE PROPIETARIOS -------
+// -------------------------------------------------
+
 class Propietario {
 public: 
     Propietario();
@@ -132,7 +144,7 @@ private:
     char* contrasena;
 
     friend int strlen(char* string);
-    friend void strcpy(char* destino, const char* original);
+    friend void my_strcpy(char* destino, const char* original);
 };
 
 class ListaDePropietarios {
